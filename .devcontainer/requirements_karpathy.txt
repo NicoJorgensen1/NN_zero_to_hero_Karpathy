@@ -21,3 +21,4 @@ micrograd
 tqdm
 ipykernel
 graphviz
+ipywidgets
