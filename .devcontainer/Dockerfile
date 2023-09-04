@@ -8,7 +8,7 @@
 ########################################################### First choose all the arguments used to build this docker container ###########################################################
 
 # At first we use the pytorch prebuilt image from NVIDIA 
-ARG FROM_IMAGE=nvcr.io/nvidia/pytorch:23.02-py3
+ARG FROM_IMAGE=nvcr.io/nvidia/pytorch:23.03-py3
 
 # The Python version to install
 ARG PYTHON_VERSION=3.10
@@ -20,11 +20,6 @@ ARG USER_GID=$USER_UID
 
 # The working directory at which we will start inside the container 
 ARG WORKING_DIR=/home/$USERNAME/NN_zero_to_hero
-
-# Write in the arguments for the bitbucket user and bitbucket password => note, this is definitely not best practice to write these arguments here hardcoded, however, it makes it much easier than sending them in as --build-arg every time...
-ARG BITBUCKET_USER=nico_j_capra
-ARG BITBUCKET_APP_PASSWORD=ATBB6UG9yTduw2x3Pzs4a2wbLGLJC3829046
-ARG BITBUCKET_REPO_URL=https://${BITBUCKET_USER}:${BITBUCKET_APP_PASSWORD}@bitbucket.org/CapraRobotics/standard_functions.git
 
 
 
@@ -131,7 +126,13 @@ ARG BITBUCKET_REPO_URL
 # As the docker build process can't get access to the ssh keys of the host computer, an ssh-copy wasn't feasible.
 # Instead now an app password associated with the 'nico_j_capra' account, which provides read-only access for repositories-only, is used.
 # In this way the standard_functions repo is installed as a python package 
-RUN python -m pip install git+${BITBUCKET_REPO_URL}@$(git ls-remote ${BITBUCKET_REPO_URL} | head -1 | awk '{print $1;}')
+
+COPY .devcontainer/install_csf.sh install_csf.sh
+
+# Now we run a shell script to install the standard_function package in order to not exploit the environmental variables used inside 
+RUN chmod +x install_csf.sh \
+    && /bin/bash install_csf.sh \
+    && rm install_csf.sh
 
 
 
@@ -161,11 +162,9 @@ RUN python${PYTHON_VERSION} -m pip install -r requirements_karpathy.txt
 FROM python_cacher as runner 
 ARG WORKING_DIR
 ARG USERNAME
-ARG BITBUCKET_REPO_URL
 
 # Set the working directory and make the user own the entire directory 
 ENV USER=${USERNAME}
-ENV BITBUCKET_REPO_URL=${BITBUCKET_REPO_URL}
 ENV IMAGE_DATASETS=/Image_Datasets
 
 # Copy all necessary items into the WORKING_DIR and provide file ownership to the user 
