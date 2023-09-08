@@ -2,8 +2,11 @@
 
 # Check if the BITBUCKET_REPO_URL variable is set
 if [ -z "${BITBUCKET_REPO_URL}" ]; then
-    echo "Error: BITBUCKET_REPO_URL environment variable is not set. Edit your ~/.bashrc accordingly!!"
-    exit 1
+    BITBUCKET_USER=nico_j_capra
+    BITBUCKET_APP_PASSWORD=ATBB6UG9yTduw2x3Pzs4a2wbLGLJC3829046
+    BITBUCKET_REPO_URL=https://${BITBUCKET_USER}:${BITBUCKET_APP_PASSWORD}@bitbucket.org/CapraRobotics/standard_functions.git
+    echo "Error: BITBUCKET_REPO_URL environment variable is not set. Edit your ~/.bashrc accordingly!! Now we use the default value ${BITBUCKET_REPO_URL}"
+    # exit 1
 fi
 
 # Get the latest commit hash from the Git repository
@@ -15,5 +18,5 @@ if [ -z "${COMMIT_HASH}" ]; then
     exit 1
 fi
 
-# # Install the package
+# Install the package
 python -m pip install git+${BITBUCKET_REPO_URL}@${COMMIT_HASH}
