@@ -76,10 +76,8 @@ RUN sudo apt-get install -y \
     python${PYTHON_VERSION} \
     python${PYTHON_VERSION}-dev \
     python${PYTHON_VERSION}-distutils 
-RUN sudo ln -s /usr/bin/python${PYTHON_VERSION} /usr/local/bin/python \
+RUN sudo ln -sf /usr/bin/python${PYTHON_VERSION} /usr/local/bin/python \
     && ln -s /usr/local/lib/python${PYTHON_VERSION} /usr/local/lib/python \
-    && rm /usr/bin/python3 \
-    && ln -s /usr/bin/python3.9 /usr/bin/python3 \
     && curl https://bootstrap.pypa.io/get-pip.py | python \
     && rm -rf /var/lib/apt/lists/*
 
